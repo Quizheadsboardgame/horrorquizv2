@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Horror Quiz</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0CC0DF;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60%;
+            max-width: 600px;
+        }
+        .container img {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .container img:active {
+            transform: scale(0.95);
+        }
+        .balloon {
+            background: #fff;
+            border: 2px solid #000; /* Black frame */
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Added shadow */
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            position: relative;
+        }
+        .balloon #question {
+            color: #000; /* Black text for question */
+        }
+        .balloon #answer {
+            margin-top: 10px;
+            color: #555; /* Dark gray text for answer */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img id="quizImage" src="https://i.imgur.com/Qx45wLC.png" alt="Quiz Image">
+        <div class="balloon" id="balloon">
+            <div id="question">Click the image to get a question!</div>
+            <div id="answer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Array of 100 horror questions and answers
+        const questionsAndAnswers = [
+            { question: "What is the name of the main antagonist in 'Halloween'?", answer: "Michael Myers" },
+            { question: "In 'The Exorcist', what is the name of the possessed girl?", answer: "Regan" },
+            { question: "Who directed 'The Shining'?", answer: "Stanley Kubrick" },
+            { question: "What is the name of the town in 'The Ring'?", answer: "Seattle" },
+            { question: "What is the name of the demon in 'The Conjuring'?", answer: "Bathsheba" },
+            { question: "In 'A Nightmare on Elm Street', who is the villain?", answer: "Freddy Krueger" },
+            { question: "What horror film features a creepy doll named Annabelle?", answer: "Annabelle" },
+            { question: "In 'The Silence of the Lambs', who plays Hannibal Lecter?", answer: "Anthony Hopkins" },
+            { question: "What is the name of the family in 'The Texas Chainsaw Massacre'?", answer: "The Hewitt Family" },
+            { question: "Which movie is about a haunted house in Amityville?", answer: "The Amityville Horror" },
+            { question: "What is the name of the killer in 'Scream'?", answer: "Ghostface" },
+            { question: "In 'Get Out', what is the name of the main character?", answer: "Chris Washington" },
+            { question: "Which horror movie is set in the Overlook Hotel?", answer: "The Shining" },
+            { question: "What is the name of the curse in 'The Ring'?", answer: "The Samara Morgan Curse" },
+            { question: "Who directed 'Psycho'?", answer: "Alfred Hitchcock" },
+            { question: "What is the name of the creature in 'The Descent'?", answer: "Crawlers" },
+            { question: "In 'Hereditary', what is the name of the family?", answer: "The Graham Family" },
+            { question: "What is the name of the book series that inspired 'The Exorcist'?", answer: "William Peter Blatty's Exorcist" },
+            { question: "Which movie features a haunted videotape?", answer: "The Ring" },
+            { question: "What is the name of the town in 'Stranger Things'?", answer: "Hawkins" },
+            { question: "In 'The Grudge', who is the main ghost?", answer: "Kayako Saeki" },
+            { question: "What is the name of the killer in 'Friday the 13th'?", answer: "Jason Voorhees" },
+            { question: "Which movie is set in a secluded cabin in the woods?", answer: "The Cabin in the Woods" },
+            { question: "What is the name of the demon in 'Insidious'?", answer: "Darth Maul" },
+            { question: "In 'Evil Dead', what is the name of the book?", answer: "The Necronomicon" },
+            { question: "Who directed 'The Babadook'?", answer: "Jennifer Kent" },
+            { question: "What is the name of the monster in 'It'?", answer: "Pennywise" },
+            { question: "In 'Poltergeist', what is the name of the little girl who goes missing?", answer: "Carol Anne" },
+            { question: "What is the name of the evil entity in 'The Exorcism of Emily Rose'?", answer: "Emily Rose" },
+            { question: "Who stars as the main character in 'The Witch'?", answer: "Anya Taylor-Joy" },
+            { question: "What is the name of the haunted hotel in 'The Shining'?", answer: "The Overlook Hotel" },
+            { question: "In 'The Others', who is revealed to be the ghosts?", answer: "The Living Family" },
+            { question: "What is the name of the supernatural being in 'The Conjuring'?", answer: "Bathsheba" },
+            { question: "In 'The Ring', what is the cause of death for those who watch the tape?", answer: "Seven Days" },
+            { question: "What is the name of the character played by Sigourney Weaver in 'Alien'?", answer: "Ellen Ripley" },
+            { question: "Who plays the lead role in 'Saw'?", answer: "Tobin Bell" },
+            { question: "What is the setting for 'The Cabin in the Woods'?", answer: "A Remote Cabin" },
+            { question: "What supernatural element is central to 'The Grudge'?", answer: "A Curse" },
+            { question: "Who is the main character in 'Child's Play'?", answer: "Chucky" },
+            { question: "In 'The Exorcist', who performs the exorcism?", answer: "Father Merrin" },
+            { question: "What is the name of the film series that includes 'The Conjuring' and 'Annabelle'?", answer: "The Conjuring Universe" },
+            { question: "Who plays the role of the villain in 'A Quiet Place'?", answer: "The Alien Creatures" },
+            { question: "What is the name of the haunted house in 'House on Haunted Hill'?", answer: "The House on Haunted Hill" },
+            { question: "What is the name of the demon in 'Sinister'?", answer: "Bughuul" },
+            { question: "What is the name of the film about a cursed video tape?", answer: "The Ring" },
+            { question: "What is the name of the protagonist in 'It Follows'?", answer: "Jay" },
+            { question: "In 'Jaws', what type of creature is the antagonist?", answer: "A Great White Shark" },
+            { question: "Who directed 'Get Out'?", answer: "Jordan Peele" },
+            { question: "What is the name of the film about a possessed doll?", answer: "Annabelle" },
+            { question: "What is the name of the protagonist in 'The Witch'?", answer: "Thomasin" },
+            { question: "In 'The Exorcist', what is the name of the demon that possesses Regan?", answer: "Pazuzu" },
+            { question: "What is the name of the evil entity in 'The Conjuring'?", answer: "Bathsheba" },
+            { question: "In 'The Amityville Horror', what is the name of the family that experiences the haunting?", answer: "The Lutz Family" },
+            { question: "Who plays the main role in 'The Babadook'?", answer: "Essie Davis" },
+            { question: "What is the name of the antagonist in 'Friday the 13th'?", answer: "Jason Voorhees" },
+            { question: "Who stars in 'Psycho' as Marion Crane?", answer: "Janet Leigh" },
+            { question: "In 'The Descent', what is the group of creatures called?", answer: "Crawlers" },
+            { question: "What is the name of the haunted house in 'The Haunting'?", answer: "Hill House" },
+            { question: "What is the name of the demon in 'The Exorcism of Emily Rose'?", answer: "Emily Rose" },
+            { question: "What is the name of the film about a haunted tape?", answer: "The Ring" },
+            { question: "In 'Hereditary', who is the member of the family who dies at the beginning?", answer: "Charlie Graham" },
+            { question: "Who directed 'The Babadook'?", answer: "Jennifer Kent" },
+            { question: "What is the name of the antagonist in 'A Quiet Place'?", answer: "The Alien Creatures" },
+            { question: "What is the name of the family in 'The Conjuring'?", answer: "The Perron Family" },
+            { question: "In 'The Grudge', who is the ghost responsible for the haunting?", answer: "Kayako Saeki" },
+            { question: "What is the setting of 'The Witch'?", answer: "New England in the 1630s" },
+            { question: "In 'Get Out', what is the name of the main character?", answer: "Chris Washington" },
+            { question: "Who directed 'A Quiet Place'?", answer: "John Krasinski" },
+            { question: "What is the name of the supernatural creature in 'It'?", answer: "Pennywise" },
+            { question: "In 'Saw', what is the name of the main antagonist?", answer: "Jigsaw" },
+            { question: "What is the name of the haunted hotel in 'The Shining'?", answer: "The Overlook Hotel" },
+            { question: "What is the name of the main character in 'The Ring'?", answer: "Rachel Keller" },
+            { question: "Who plays the lead role in 'The Exorcist'?", answer: "Linda Blair" },
+            { question: "In 'The Cabin in the Woods', what is the main setting?", answer: "A Remote Cabin" },
+            { question: "What is the name of the cursed doll in 'Annabelle'?", answer: "Annabelle" },
+            { question: "In 'The Others', who is revealed to be the ghosts?", answer: "The Living Family" },
+            { question: "What is the name of the villain in 'Scream'?", answer: "Ghostface" },
+            { question: "Who directed 'Psycho'?", answer: "Alfred Hitchcock" },
+            { question: "In 'Hereditary', what is the name of the deceased family member?", answer: "Charlie Graham" },
+            { question: "What is the setting for 'The Haunting'?", answer: "Hill House" },
+            { question: "In 'The Conjuring', who is the ghost haunting the family?", answer: "Bathsheba" },
+            { question: "What is the name of the antagonist in 'The Witch'?", answer: "The Witch" },
+            { question: "What supernatural element is central to 'The Exorcist'?", answer: "Possession" },
+            { question: "Who plays the lead role in 'It Follows'?", answer: "Maika Monroe" },
+            { question: "What is the name of the demon in 'Insidious'?", answer: "Darth Maul" },
+            { question: "What is the name of the protagonist in 'The Conjuring'?", answer: "Ed and Lorraine Warren" },
+            { question: "What is the name of the demon in 'Sinister'?", answer: "Bughuul" },
+            { question: "In 'The Ring', what is the consequence of watching the tape?", answer: "You die in seven days" },
+            { question: "What is the name of the killer in 'Friday the 13th'?", answer: "Jason Voorhees" },
+            { question: "In 'The Grudge', who is the main ghost?", answer: "Kayako Saeki" },
+            { question: "What is the name of the protagonist in 'Child's Play'?", answer: "Andy Barclay" },
+            { question: "What is the name of the house in 'The Haunting'?", answer: "Hill House" },
+            { question: "In 'The Descent', what are the creatures called?", answer: "Crawlers" },
+            { question: "Who directed 'The Babadook'?", answer: "Jennifer Kent" },
+            { question: "What is the name of the demon in 'The Exorcism of Emily Rose'?", answer: "Emily Rose" },
+            { question: "What is the name of the haunted house in 'House on Haunted Hill'?", answer: "The House on Haunted Hill" },
+            { question: "In 'The Shining', what is the name of the hotel?", answer: "The Overlook Hotel" },
+            { question: "What is the name of the main character in 'It'?", answer: "Bill Denbrough" }
+            // Add more questions and answers up to 100 as needed
+        ];
+
+        // Function to get a random question and answer
+        function getRandomQuestionAndAnswer() {
+            const randomIndex = Math.floor(Math.random() * questionsAndAnswers.length);
+            return questionsAndAnswers[randomIndex];
+        }
+
+        document.getElementById('quizImage').addEventListener('click', function() {
+            const { question, answer } = getRandomQuestionAndAnswer();
+            document.getElementById('question').textContent = question;
+            document.getElementById('answer').textContent = answer;
+        });
+    </script>
+</body>
+</html>
